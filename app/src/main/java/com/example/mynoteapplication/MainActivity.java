@@ -16,12 +16,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Filter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
+
+import android.widget.SearchView;
+import android.widget.Toast;
+
 public class MainActivity extends AppCompatActivity {
 
+    ListView listView;
    static ArrayList<String> notes = new ArrayList<String>();// linked to our listview
     static ArrayAdapter<String> arrayAdapter ;// to form  the link between arraylist and the items on the  Listview
 
@@ -31,6 +37,23 @@ public class MainActivity extends AppCompatActivity {
     {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu,menu);
+        MenuItem menuItem = menu.findItem(R.id.search_mag_icon);
+      SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setQueryHint("Search Here!");
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s)
+            {
+                arrayAdapter.getFilter().filter(s);
+                return true;
+            }
+        });
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -57,11 +80,56 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListView listView = (ListView)findViewById(R.id.listView);// creating new object and connecting this with Listview we created in the xml file
-        notes.add("Example Note");// adding emaple note to our list
+        listView = (ListView)findViewById(R.id.listView);// creating new object and connecting this with Listview we created in the xml file
+
+        //searchView = (SearchView) findViewById(R.id.searchView);
+      // listView = (ListView) findViewById(R.id.add_note);
+
+
+
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("", Context.MODE_PRIVATE);
+        HashSet<String> set = (HashSet<String>)sharedPreferences.getStringSet("notes", null);
+
+        if (set == null)
+        {
+            notes.add("Example Note");// adding emaple note to our list
+        }
+
+        else
+        {
+            notes = new ArrayList<>(set); // to bring all the aleready stored data in the set
+        }
+
+
+
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,notes);
         listView.setAdapter(arrayAdapter);
 
+        /*
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                if(notes.contains(query))
+                {
+                    arrayAdapter.getFilter().filter(query);
+                }else
+                {
+                    Toast.makeText(MainActivity.this, "No Match found",Toast.LENGTH_LONG).show();
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //    arrayAdapter.getFilter().filter(newText);
+                return false;
+            }
+
+
+        });
+
+*/
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -72,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
 
         // deletion of note
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -92,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 // storing data permanently
 
-                                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("com.tanay.thunderbird.notes", Context.MODE_PRIVATE);
+                                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("", Context.MODE_PRIVATE);
                                 HashSet<String> set = new HashSet<>(MainActivity.notes);
                                 sharedPreferences.edit().putStringSet("notes",set).apply();
                             }
@@ -102,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
 
                 return true;
             }
-        });
+
+            });
+
     }
 }

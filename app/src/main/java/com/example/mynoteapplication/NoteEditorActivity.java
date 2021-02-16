@@ -16,10 +16,12 @@ import java.util.HashSet;
 public class NoteEditorActivity extends AppCompatActivity {
 
     int noteID ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_editor);
+
 
         EditText editText = (EditText)findViewById(R.id.editText);
         Intent intent = getIntent();
@@ -52,7 +54,7 @@ public class NoteEditorActivity extends AppCompatActivity {
 
                 // storing data permanently to our app by using sharedPreferences
 
-                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("com.tanay.thunderbird.notes", Context.MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("", Context.MODE_PRIVATE);
                 HashSet<String> set = new HashSet<>(MainActivity.notes);
                 sharedPreferences.edit().putStringSet("notes",set).apply();
 
