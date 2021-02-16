@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                                 notes.remove(position);
                                 arrayAdapter.notifyDataSetChanged();
 
+                                // storing data permanently
 
                                 SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("com.tanay.thunderbird.notes", Context.MODE_PRIVATE);
                                 HashSet<String> set = new HashSet<>(MainActivity.notes);
