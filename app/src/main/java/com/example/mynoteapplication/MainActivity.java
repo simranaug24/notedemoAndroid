@@ -16,14 +16,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Filter;
+
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
 
-import android.widget.SearchView;
+import androidx.appcompat.widget.SearchView;
 import android.widget.Toast;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,23 +38,25 @@ public class MainActivity extends AppCompatActivity {
     {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu,menu);
-        MenuItem menuItem = menu.findItem(R.id.search_mag_icon);
-      SearchView searchView = (SearchView) menuItem.getActionView();
+
+        MenuItem.OnActionExpandListener onActionExpandListener = new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                Toast.makeText(MainActivity.this, "Search is Expanded", Toast.LENGTH_SHORT).show();
+                return true  ;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                Toast.makeText(MainActivity.this, "Search is Collapse", Toast.LENGTH_SHORT).show();
+                return true  ;            }
+        };
+
+        menu.findItem(R.id.search).setOnActionExpandListener(onActionExpandListener);
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setQueryHint("Search Here!");
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s)
-            {
-                arrayAdapter.getFilter().filter(s);
-                return true;
-            }
-        });
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -82,8 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
         listView = (ListView)findViewById(R.id.listView);// creating new object and connecting this with Listview we created in the xml file
 
-        //searchView = (SearchView) findViewById(R.id.searchView);
-      // listView = (ListView) findViewById(R.id.add_note);
+
 
 
 
@@ -102,34 +104,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,notes);
+        arrayAdapter = new ArrayAdapter<String >(this, android.R.layout.simple_list_item_1,notes);
         listView.setAdapter(arrayAdapter);
 
-        /*
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-
-                if(notes.contains(query))
-                {
-                    arrayAdapter.getFilter().filter(query);
-                }else
-                {
-                    Toast.makeText(MainActivity.this, "No Match found",Toast.LENGTH_LONG).show();
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //    arrayAdapter.getFilter().filter(newText);
-                return false;
-            }
-
-
-        });
-
-*/
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
